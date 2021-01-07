@@ -21,18 +21,30 @@ LICENSE"""
 import argparse
 from puffotter.init import cli_start, argparse_add_verbosity
 from torrent_dl import sentry_dsn
+from torrent_dl.search import search_engines
+from torrent_dl.search.SearchEngine import SearchEngine
 
 
 def main(args: argparse.Namespace):
     """
-    Conducts a torrent pack search
+    Conducts a torrent file search
     :param args: The command line arguments
     :return: None
     """
+    search_engine: SearchEngine = {
+        x.name(): x for x in search_engines
+    }[args.search_engine]()
+    results = search_engine.search(args.search_term)
+
+    for result in reversed(results):
+        print(result)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("search_term", help="The term to search for")
+    parser.add_argument("search_engine", help="The search engine to use",
+                        choices={x.name() for x in search_engines})
     argparse_add_verbosity(parser)
     cli_start(
         main, parser,

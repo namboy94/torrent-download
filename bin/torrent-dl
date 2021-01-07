@@ -18,23 +18,36 @@ You should have received a copy of the GNU General Public License
 along with torrent-dl.  If not, see <http://www.gnu.org/licenses/>.
 LICENSE"""
 
-import logging
 import argparse
 from puffotter.init import cli_start, argparse_add_verbosity
 from torrent_dl import sentry_dsn
+from torrent_dl.entities.TorrentInfo import TorrentInfo
+from torrent_dl.entities.TorrentDownload import TorrentDownload
+from torrent_dl.download.QBittorrentDownloader import QBittorrentDownloader
 
 
-def main(args: argparse.Namespace, logger: logging.Logger):
+def main(args: argparse.Namespace):
     """
     Starts the main method of the program
     :param args: The command line arguments
-    :param logger: The logger to use
     :return: None
     """
+    target = args.target
+    if target.startswith("magnet:"):
+        info = TorrentInfo()
+
+    downloader = QBittorrentDownloader(
+        "http://localhost:7190",
+        "admin",
+        "$Bu6GTdckZqij9*XX7y^HhkcTSAcT^RKynS@gq#kh5v3cTXrX3Am^&G7NNKi^YpV",
+        "/home/hermann/Downloads/torrents"
+    )
+    downloader.download([torrents])
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("target", help="Torrent file or magnet link")
     argparse_add_verbosity(parser)
     cli_start(
         main, parser,
