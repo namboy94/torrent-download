@@ -2,30 +2,30 @@
 """LICENSE
 Copyright 2021 Hermann Krumrey <hermann@krumreyh.com>
 
-This file is part of torrent-dl.
+This file is part of torrent-download.
 
-torrent-dl is free software: you can redistribute it and/or modify
+torrent-download is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-torrent-dl is distributed in the hope that it will be useful,
+torrent-download is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with torrent-dl.  If not, see <http://www.gnu.org/licenses/>.
+along with torrent-download.  If not, see <http://www.gnu.org/licenses/>.
 LICENSE"""
 
 import logging
 import argparse
 from puffotter.init import cli_start, argparse_add_verbosity
-from torrent_dl import sentry_dsn
-from torrent_dl.exceptions import MissingConfig
-from torrent_dl.entities.TorrentInfo import TorrentInfo
-from torrent_dl.entities.TorrentDownload import TorrentDownload
-from torrent_dl.download.QBittorrentDownloader import QBittorrentDownloader
+from torrent_download import sentry_dsn
+from torrent_download.exceptions import MissingConfig
+from torrent_download.entities.TorrentInfo import TorrentInfo
+from torrent_download.entities.TorrentDownload import TorrentDownload
+from torrent_download.download.QBittorrentDownloader import QBittorrentDownloader
 
 
 def main(args: argparse.Namespace, logger: logging.Logger):
@@ -39,7 +39,7 @@ def main(args: argparse.Namespace, logger: logging.Logger):
         downloader = QBittorrentDownloader.from_config()
     except MissingConfig:
         logger.warning("Missing configuration file. "
-                       "Use torrent-dl-config-gen to create one.")
+                       "Use tdl-config-gen to create one.")
         return
 
     target = args.target
@@ -58,6 +58,6 @@ if __name__ == "__main__":
     cli_start(
         main, parser,
         sentry_dsn=sentry_dsn,
-        package_name="torrent-dl",
-        exit_msg="Thanks for using torrent-dl!"
+        package_name="torrent-download",
+        exit_msg="Thanks for using torrent-download!"
     )

@@ -18,7 +18,7 @@ github_mirror:
     - echo "$GITHUB_SSH_KEY" > ~/.ssh/id_rsa
     - chmod 0600 ~/.ssh/id_rsa
   script:
-    - git-mirror-pusher git@github.com:namboy94/torrent-dl.git
+    - git-mirror-pusher git@github.com:namboy94/torrent-download.git
       master develop
 
 stylecheck:

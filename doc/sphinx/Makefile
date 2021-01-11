@@ -217,6 +217,6 @@ pseudoxml:
 
 
 buildsource:
-	sphinx-apidoc -f ../../torrent_dl -o source
+	sphinx-apidoc -f ../../torrent_download -o source
 	@echo "Auto-generation of API documentation finished. " \
 		"The generated files are in 'source/'"

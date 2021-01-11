@@ -1,4 +1,4 @@
-Welcome to torrent-dl's documentation!
+Welcome to torrent-download's documentation!
 ===================================
 
 Contents:
@@ -6,7 +6,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   torrent_dl.rst
+   torrent_download.rst
    modules.rst
 
 Indices and tables
