@@ -46,7 +46,7 @@ if __name__ == "__main__":
             "cfscrape",
             "typing",
             "colorama",
-            "qbittorrent",
+            "python-qbittorrent",
             "puffotter",
             "sentry-sdk"
         ],

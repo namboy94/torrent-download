@@ -18,42 +18,23 @@ You should have received a copy of the GNU General Public License
 along with torrent-dl.  If not, see <http://www.gnu.org/licenses/>.
 LICENSE"""
 
-import logging
 import argparse
 from puffotter.init import cli_start, argparse_add_verbosity
 from torrent_dl import sentry_dsn
-from torrent_dl.exceptions import MissingConfig
-from torrent_dl.entities.TorrentInfo import TorrentInfo
-from torrent_dl.entities.TorrentDownload import TorrentDownload
-from torrent_dl.download.QBittorrentDownloader import QBittorrentDownloader
+from torrent_dl.Config import Config
 
 
-def main(args: argparse.Namespace, logger: logging.Logger):
+def main():
     """
     Starts the main method of the program
-    :param args: The command line arguments
-    :param logger: Logger
     :return: None
     """
-    try:
-        downloader = QBittorrentDownloader.from_config()
-    except MissingConfig:
-        logger.warning("Missing configuration file. "
-                       "Use torrent-dl-config-gen to create one.")
-        return
-
-    target = args.target
-    if target.startswith("magnet:"):
-        info = TorrentInfo(None, None, target, None)
-    else:
-        info = TorrentInfo(None, target, None, None)
-
-    downloader.download([TorrentDownload(info, ".")])
+    config = Config.prompt()
+    config.save()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("target", help="Torrent file or magnet link")
     argparse_add_verbosity(parser)
     cli_start(
         main, parser,

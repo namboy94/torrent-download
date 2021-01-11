@@ -19,6 +19,7 @@ LICENSE"""
 
 import os
 from typing import Optional
+from puffotter.os import makedirs
 from torrent_dl.entities.TorrentInfo import TorrentInfo
 
 
@@ -42,10 +43,14 @@ class TorrentDownload:
         """
         self.torrent_info = torrent_info
         self.destination_dir = destination_dir
+        makedirs(destination_dir)
         if destination_filename is None:
-            self.destination = os.path.join(
-                destination_dir, torrent_info.filename
-            )
+            if torrent_info.filename is None:
+                self.destination = destination_dir
+            else:
+                self.destination = os.path.join(
+                    destination_dir, torrent_info.filename
+                )
         else:
             self.destination = os.path.join(
                 destination_dir, destination_filename

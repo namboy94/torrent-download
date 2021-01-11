@@ -20,8 +20,10 @@ LICENSE"""
 import os
 import time
 import shutil
+import requests
 from typing import List
 from qbittorrent import Client
+from torrent_dl.Config import Config
 from torrent_dl.entities.TorrentDownload import TorrentDownload
 
 
@@ -48,6 +50,20 @@ class QBittorrentDownloader:
         self.client.login(username, password)
         self.download_dir = download_dir
 
+    @classmethod
+    def from_config(cls) -> "QBittorrentDownloader":
+        """
+        :return: A QBittorrentDownloader object based on the stored
+                 configuration files
+        """
+        config = Config.load()
+        return cls(
+            config.qbittorrent_address,
+            config.qbittorrent_username,
+            config.qbittorrent_password,
+            config.qbittorrent_download_dir
+        )
+
     def download(self, torrents: List[TorrentDownload]):
         """
         Downloads a list of torrent files
@@ -59,7 +75,21 @@ class QBittorrentDownloader:
 
             print(f"Downloading Torrent: {torrent_info.filename}")
 
-            self.client.download([torrent_info.magnet_link])
+            if torrent_info.magnet_link is not None:
+                self.client.download_from_link(torrent_info.magnet_link)
+            else:
+                assert torrent_info.torrent_file is not None
+                torrent_file = torrent_info.torrent_file
+                if not os.path.isfile(torrent_file):
+                    torrent_file = "/tmp/torrentdltemp.torrent"
+                    content = requests.get(torrent_info.torrent_file).content
+                    with open(torrent_file, "wb") as f:
+                        f.write(content)
+                with open(torrent_file, "rb") as f:
+                    self.client.download_from_file(f)
+
+            time.sleep(1)
+
             while len(self.client.torrents()) > 0:
                 for active in self.client.torrents():
                     if active["state"] not in [
@@ -83,7 +113,17 @@ class QBittorrentDownloader:
                             torrent.add_extension(ext)
 
                         self.client.delete(active["hash"])
-                        shutil.move(torrent_path, torrent.destination)
+
+                        if os.path.isdir(torrent.destination):
+                            shutil.move(
+                                torrent_path,
+                                os.path.join(
+                                    torrent.destination,
+                                    os.path.basename(torrent_path)
+                                )
+                            )
+                        else:
+                            shutil.move(torrent_path, torrent.destination)
                     else:
                         print(f"{(100 * active['progress']):.2f}%", end="\r")
 

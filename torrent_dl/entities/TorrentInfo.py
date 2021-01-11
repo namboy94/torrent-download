@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with torrent-dl.  If not, see <http://www.gnu.org/licenses/>.
 LICENSE"""
 
+from typing import Optional
 from puffotter.units import human_readable_bytes
 
 
@@ -27,10 +28,10 @@ class TorrentInfo:
 
     def __init__(
             self,
-            filename: str,
-            torrent_file: str,
-            magnet_link: str,
-            size: int
+            filename: Optional[str],
+            torrent_file: Optional[str],
+            magnet_link: Optional[str],
+            size: Optional[int]
     ):
         """
         Initializes the torrent info object
@@ -39,6 +40,8 @@ class TorrentInfo:
         :param magnet_link: A magnet link to the torrent
         :param size: The size of the file in bytes
         """
+        if torrent_file is None and magnet_link is None:
+            raise ValueError("No torrent information provided")
         self.filename = filename
         self.torrent_file = torrent_file
         self.magnet_link = magnet_link

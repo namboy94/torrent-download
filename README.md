@@ -13,6 +13,12 @@ using bittorrent.
 
 Either install the program using `pip install torrent-dl` or `python setup.py install`
 
+Additionally, a running instance of qbittorent web must be accessible to the user.
+A good way to do so is using
+[this docker image](https://hub.docker.com/r/linuxserver/qbittorrent).
+
+After installing torrent-dl, you will need to run ```torrent-dl-config-gen```
+to complete the setup.
 
 ## Projects using torrent-dl
 

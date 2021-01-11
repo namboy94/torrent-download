@@ -24,6 +24,7 @@ from typing import List
 from puffotter.init import cli_start, argparse_add_verbosity
 from puffotter.prompt import selection_prompt
 from torrent_dl import sentry_dsn
+from torrent_dl.exceptions import MissingConfig
 from torrent_dl.search import search_engines
 from torrent_dl.search.SearchEngine import SearchEngine
 from torrent_dl.entities.TorrentInfo import TorrentInfo
@@ -31,26 +32,29 @@ from torrent_dl.entities.TorrentDownload import TorrentDownload
 from torrent_dl.download.QBittorrentDownloader import QBittorrentDownloader
 
 
-def main(args: argparse.Namespace):
+def main(args: argparse.Namespace, logger: logging.Logger):
     """
     Conducts a torrent file search with the option to immediately download any
     found packs
     :param args: The command line arguments
+    :param logger: Logger
     :return: None
     """
+    try:
+        downloader = QBittorrentDownloader.from_config()
+    except MissingConfig:
+        logger.warning("Missing configuration file. "
+                       "Use torrent-dl-config-gen to create one.")
+        return
+
     search_engine: SearchEngine = {
         x.name(): x for x in search_engines
     }[args.search_engine]()
     results = search_engine.search(args.search_term)
 
+    # noinspection PyTypeChecker
     selection: List[TorrentInfo] = selection_prompt(results)
     torrents = [TorrentDownload(x, ".") for x in selection]
-    downloader = QBittorrentDownloader(
-        "http://localhost:7190",
-        "admin",
-        "$Bu6GTdckZqij9*XX7y^HhkcTSAcT^RKynS@gq#kh5v3cTXrX3Am^&G7NNKi^YpV",
-        "/home/hermann/Downloads/torrents"
-    )
     downloader.download(torrents)
 
 
