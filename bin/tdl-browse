@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+"""LICENSE
+Copyright 2021 Hermann Krumrey <hermann@krumreyh.com>
+
+This file is part of torrent-download.
+
+torrent-download is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+torrent-download is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with torrent-download.  If not, see <http://www.gnu.org/licenses/>.
+LICENSE"""
+
+import logging
+import argparse
+from typing import List
+from puffotter.init import cli_start, argparse_add_verbosity
+from puffotter.prompt import selection_prompt
+from torrent_download import sentry_dsn
+from torrent_download.exceptions import MissingConfig
+from torrent_download.search import search_engines
+from torrent_download.search.SearchEngine import SearchEngine
+from torrent_download.entities.TorrentInfo import TorrentInfo
+from torrent_download.entities.TorrentDownload import TorrentDownload
+from torrent_download.download.QBittorrentDownloader import QBittorrentDownloader
+
+
+def main(args: argparse.Namespace, logger: logging.Logger):
+    """
+    Conducts a torrent file search with the option to immediately download any
+    found packs
+    :param args: The command line arguments
+    :param logger: Logger
+    :return: None
+    """
+    try:
+        downloader = QBittorrentDownloader.from_config()
+    except MissingConfig:
+        logger.warning("Missing configuration file. "
+                       "Use tdl-config-gen to create one.")
+        return
+
+    search_engine: SearchEngine = {
+        x.name(): x for x in search_engines
+    }[args.search_engine]()
+    results = search_engine.search(args.search_term)
+
+    # noinspection PyTypeChecker
+    selection: List[TorrentInfo] = selection_prompt(results)
+    torrents = [TorrentDownload(x, ".") for x in selection]
+    downloader.download(torrents)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("search_term", help="The term to search for")
+    parser.add_argument("search_engine", help="The search engine to use",
+                        choices={x.name() for x in search_engines})
+    argparse_add_verbosity(parser)
+    cli_start(
+        main, parser,
+        sentry_dsn=sentry_dsn,
+        package_name="torrent-download",
+        exit_msg="Thanks for using torrent-download!"
+    )

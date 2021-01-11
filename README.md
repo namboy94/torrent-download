@@ -1,8 +1,8 @@
-# torrent Downloader
+# torrent-download
 
 |master|develop|
 |:---:|:---:|
-|[![build status](https://gitlab.namibsun.net/namibsun/python/torrent-dl/badges/master/build.svg)](https://gitlab.namibsun.net/namibsun/python/torrent-dl/commits/master)|[![build status](https://gitlab.namibsun.net/namibsun/python/torrent-dl/badges/develop/build.svg)](https://gitlab.namibsun.net/namibsun/python/torrent-dl/commits/develop)|
+|[![build status](https://gitlab.namibsun.net/namibsun/python/torrent-download/badges/master/build.svg)](https://gitlab.namibsun.net/namibsun/python/torrent-download/commits/master)|[![build status](https://gitlab.namibsun.net/namibsun/python/torrent-download/badges/develop/build.svg)](https://gitlab.namibsun.net/namibsun/python/torrent-download/commits/develop)|
 
 ![Logo](resources/logo/logo-readme.png)
 
@@ -11,10 +11,16 @@ using bittorrent.
 
 ## Installation
 
-Either install the program using `pip install torrent-dl` or `python setup.py install`
+Either install the program using `pip install torrent-download` or `python setup.py install`
 
+Additionally, a running instance of qbittorent web must be accessible to the user.
+A good way to do so is using
+[this docker image](https://hub.docker.com/r/linuxserver/qbittorrent).
 
-## Projects using torrent-dl
+After installing torrent-download, you will need to run ```torrent-dl-config-gen```
+to complete the setup.
+
+## Projects using torrent-download
 
 * [toktokkie](https://gitlab.namibsun.net/namibsun/python/toktokkie)
    
@@ -22,7 +28,7 @@ Either install the program using `pip install torrent-dl` or `python setup.py in
 
 * [Changelog](CHANGELOG)
 * [License (GPLv3)](LICENSE)
-* [Gitlab](https://gitlab.namibsun.net/namibsun/python/torrent-dl)
-* [Github](https://github.com/namboy94/torrent-dl)
-* [Progstats](https://progstats.namibsun.net/projects/torrent-dl)
-* [PyPi](https://pypi.org/project/torrent-dl)
+* [Gitlab](https://gitlab.namibsun.net/namibsun/python/torrent-download)
+* [Github](https://github.com/namboy94/torrent-download)
+* [Progstats](https://progstats.namibsun.net/projects/torrent-download)
+* [PyPi](https://pypi.org/project/torrent-download)

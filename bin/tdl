@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+"""LICENSE
+Copyright 2021 Hermann Krumrey <hermann@krumreyh.com>
+
+This file is part of torrent-download.
+
+torrent-download is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+torrent-download is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with torrent-download.  If not, see <http://www.gnu.org/licenses/>.
+LICENSE"""
+
+import logging
+import argparse
+from puffotter.init import cli_start, argparse_add_verbosity
+from torrent_download import sentry_dsn
+from torrent_download.exceptions import MissingConfig
+from torrent_download.entities.TorrentInfo import TorrentInfo
+from torrent_download.entities.TorrentDownload import TorrentDownload
+from torrent_download.download.QBittorrentDownloader import QBittorrentDownloader
+
+
+def main(args: argparse.Namespace, logger: logging.Logger):
+    """
+    Starts the main method of the program
+    :param args: The command line arguments
+    :param logger: Logger
+    :return: None
+    """
+    try:
+        downloader = QBittorrentDownloader.from_config()
+    except MissingConfig:
+        logger.warning("Missing configuration file. "
+                       "Use tdl-config-gen to create one.")
+        return
+
+    target = args.target
+    if target.startswith("magnet:"):
+        info = TorrentInfo(None, None, target, None)
+    else:
+        info = TorrentInfo(None, target, None, None)
+
+    downloader.download([TorrentDownload(info, ".")])
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("target", help="Torrent file or magnet link")
+    argparse_add_verbosity(parser)
+    cli_start(
+        main, parser,
+        sentry_dsn=sentry_dsn,
+        package_name="torrent-download",
+        exit_msg="Thanks for using torrent-download!"
+    )
